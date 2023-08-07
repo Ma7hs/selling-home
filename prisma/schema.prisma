@@ -1,0 +1,77 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+
+model User {
+  id             Int       @id @default(autoincrement())
+  name           String
+  phone          String
+  email          String    @unique
+  password       String
+  created_at     DateTime  @default(now())   // Corrigido aqui
+  updated_at     DateTime  @updatedAt       // Corrigido aqui
+  user_type      UserType
+  home           Home[]
+  buyer_messages Messages[] @relation("buyer_messages")
+  realtor_messages Messages[] @relation("realtor_messages")
+}
+
+model Messages {
+  id          Int       @id @default(autoincrement())
+  message     String
+
+  home_id     Int
+  home        Home      @relation(fields: [home_id], references: [id])
+
+  realtor_id  Int
+  realtor     User      @relation("buyer_messages",fields: [realtor_id], references: [id])
+  
+  buyer_id    Int
+  buyer       User      @relation("realtor_messages", fields: [buyer_id], references: [id])
+}
+
+
+enum UserType{
+  BUYER
+  REALTOR
+  ADMIN
+}
+
+model Home {
+  id Int @id @default(autoincrement())
+  adress          String
+  number_of_bedrooms       Int
+  number_of_bathrooms      Int
+  city          String
+  create_at     DateTime @default(now())
+  price         Float
+  land_size     Float
+  house_type    houseType 
+  images        Image[]
+  realtor_id    Int
+  realtor      User @relation(fields: [realtor_id], references: [id])
+  messages Messages[]
+}
+
+enum houseType{
+  RESIDENTIAL
+  CONDO 
+}
+
+model Image {
+  id         Int @id @default(autoincrement())
+  img_url    String
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+  home_id    Int
+  home       Home @relation(fields: [home_id], references: [id])
+}
