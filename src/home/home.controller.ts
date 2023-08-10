@@ -3,7 +3,7 @@
 /* eslint-disable prettier/prettier */
 import { Controller, Get, HttpCode, Post, Put, Delete, Param, Body, Query, ParseFloatPipe, ParseEnumPipe } from '@nestjs/common';
 import { HomeService } from './home.service';
-import { HomeResponseDTO, VerificateHomeDTO } from 'src/dtos/home.dto';
+import { HomeResponseDTO, CreateHomeDTO } from 'src/dtos/home.dto';
 import { houseType } from '@prisma/client';
 
 
@@ -42,12 +42,16 @@ export class HomeController {
         return this.homeService.getHomeByID(id)
     }
 
-    // @Post()
-    // createHome(
-    //     @Body() body: VerificateHomeDTO
-    // ){
-    //     return this.homeService.createHome(body)
-    // }
+    @Post()
+    createHome(@Body() body: CreateHomeDTO) {
+        console.log("Received request body:", body);
+
+        const createdHome = this.homeService.createHome(body);
+
+        console.log("Response from service:", createdHome);
+
+        return createdHome;
+    }
 
     @Put(':id')
     updateHome(){

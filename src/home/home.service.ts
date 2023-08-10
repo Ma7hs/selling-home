@@ -4,20 +4,18 @@
 /* eslint-disable prettier/prettier */
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { houseType } from '@prisma/client';
-import { Home as home } from '@prisma/client';
 import { HomeResponseDTO } from 'src/dtos/home.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
 
 interface CreateHomeProps {
     adress: string,
-    realtor_id: number,
     city: string,
     number_of_bedrooms: number,
     number_of_bathrooms: number,
     price: number,
     land_size: number,
     houseType: houseType,
-    images: { url: string }[]
+    images: { img_url: string }[]
 }
 
 interface FilterHome {
@@ -93,7 +91,9 @@ export class HomeService {
         return new HomeResponseDTO(home)
     }
 
-    async createHome({ images, adress, city, houseType, land_size, number_of_bathrooms, number_of_bedrooms, price, realtor_id }: CreateHomeProps) {
+    async createHome({ images, adress, city, houseType, land_size, number_of_bathrooms, number_of_bedrooms, price }: CreateHomeProps) {
+        console.log("Received images in service:", images);
+
         const home = await this.prismaService.home.create({
             data: {
                 adress,
@@ -105,15 +105,18 @@ export class HomeService {
                 price,
                 realtor_id: 9
             }
-        })
+        });
 
         const homeImages = images.map((img) => {
-            return { img_url: img.url, home_id: home.id }
-        })
+            console.log("Processing image:", img.img_url);
+            return { img_url: img.img_url, home_id: home.id };
+        });
 
-        await this.prismaService.image.createMany({data: homeImages})
+        console.log("Processed images:", homeImages);
+        console.log("Created home:", home);
 
-        return new HomeResponseDTO(home)
+        await this.prismaService.image.createMany({ data: homeImages });
+
+        return new HomeResponseDTO(home);
     }
-
 }
