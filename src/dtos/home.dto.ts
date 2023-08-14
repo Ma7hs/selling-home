@@ -1,7 +1,7 @@
 /* eslint-disable prettier/prettier */
 import { houseType } from "@prisma/client";
 import { Exclude, Expose, Transform } from "class-transformer";
-import { IsEnum, IsNotEmpty, IsNumber, IsPositive, IsString } from "class-validator";
+import { IsEnum, IsNotEmpty, IsNumber, IsPositive, IsString, IsOptional } from "class-validator";
 
 /* eslint-disable prettier/prettier */
 
@@ -49,7 +49,51 @@ class homeImage {
     @Transform(({ value }) => ({ img_url: value }))
     img_url: string;
 }
+export class UpdateHomeDTO {
+    @IsOptional()
+    @IsNotEmpty()   
+    @IsString()
+    adress?: string;
 
+    @IsOptional()
+    @IsNotEmpty()
+    @IsPositive()
+    @IsNumber()
+    number_of_bedrooms?: number;
+
+    @IsOptional()
+    @IsNotEmpty()
+    @IsPositive()
+    @IsNumber()
+    number_of_bathrooms?: number;
+
+    @IsOptional()
+    @IsNotEmpty()
+    @IsString()
+    city?: string;
+
+    @IsOptional()
+    @IsNotEmpty()
+    @IsPositive()
+    @IsNumber()
+    price?: number;
+
+    @IsOptional()
+    @IsNotEmpty()
+    @IsPositive()
+    @IsNumber()
+    land_size?: number;
+
+    @IsOptional()
+    @IsEnum(houseType)
+    houseType?: houseType;
+}
+
+export class UpdateImageDTO{
+    @IsOptional()
+    @IsString()
+    img_url?: string
+}
 
 export class HomeResponseDTO {
 
@@ -93,4 +137,14 @@ export class HomeResponseDTO {
     constructor(partial: Partial<HomeResponseDTO>) {
         Object.assign(this, partial)
     }
+}
+
+export class ImageResponseDTO{
+    
+    img_url:string
+
+    constructor(partial: Partial<HomeResponseDTO>) {
+        Object.assign(this, partial)
+    }
+
 }
